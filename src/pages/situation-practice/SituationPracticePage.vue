@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { pickRandom, shuffleArray, takeRandom } from '@/dumb/random'
+import { pickRandom, takeRandom } from '@/dumb/random'
 import { usePracticeStore } from '@/entities/practice-tracking/practiceStore'
 import { loadSentenceByIndex, loadSentenceIndexMax } from '@/entities/sentences/repository'
 import { buildPartKey, buildSentenceKey } from '@/entities/sentences/keys'
@@ -51,6 +51,7 @@ const partState = ref<Map<string, PartState>>(new Map())
 const finalQueue = ref<string[]>([])
 const currentTask = ref<ActiveTask | null>(null)
 const lastPartKey = ref<string | null>(null)
+const lastIntroTask = ref<'memorize' | 'understand' | null>(null)
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)
 
@@ -64,6 +65,7 @@ const resetSession = () => {
   finalQueue.value = []
   currentTask.value = null
   lastPartKey.value = null
+  lastIntroTask.value = null
   errorMessage.value = null
 }
 
@@ -232,17 +234,21 @@ const requestNextTask = () => {
   lastPartKey.value = selectedKey
 
   if (state === 'VOCAB-TO-INTRODUCE') {
-    const options = shuffleArray(['memorize', 'understand'] as const)
-    for (const option of options) {
+    const preferredOrder = lastIntroTask.value === 'memorize'
+      ? (['understand', 'memorize'] as const)
+      : (['memorize', 'understand'] as const)
+    for (const option of preferredOrder) {
       if (option === 'understand') {
         const understand = buildUnderstandTask(selectedKey, part)
         if (understand) {
           currentTask.value = understand
+          lastIntroTask.value = 'understand'
           return
         }
       }
       if (option === 'memorize') {
         currentTask.value = buildMemorizeTask(selectedKey, part)
+        lastIntroTask.value = 'memorize'
         return
       }
     }
