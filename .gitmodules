@@ -1,0 +1,6 @@
+[submodule "public/data/situations"]
+	path = public/data/situations
+	url = git@github.com:koljapluemer/sbll-data.git
+[submodule "public/infinite-sentences-data"]
+	path = public/infinite-sentences-data
+	url = git@github.com:koljapluemer/infinite-sentences-data.git
