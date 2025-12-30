@@ -72,7 +72,7 @@ const cardRows = computed<IndexCardRow[]>(() => {
   ]
 })
 
-watch(() => props.task.gloss.ref, () => startTimer())
+watch(() => props.task.gloss.content, () => startTimer())
 onMounted(startTimer)
 onBeforeUnmount(stopTimer)
 </script>

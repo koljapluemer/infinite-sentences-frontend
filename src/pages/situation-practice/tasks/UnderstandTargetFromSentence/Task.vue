@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ShowInstruction from '../../elements/ShowInstruction.vue'
 import IndexCard from '../../elements/IndexCard.vue'
 import InteractionButtonRow from '../../elements/InteractionButtonRow.vue'
@@ -43,6 +43,14 @@ const flip = () => {
 }
 
 const finish = () => emit('taskDone')
+
+const resetState = () => {
+  phase.value = 'question'
+  mainFlipped.value = false
+  swipeExamples.value = false
+}
+
+watch(() => props.task.gloss.content, () => resetState())
 </script>
 
 <template>
