@@ -332,9 +332,6 @@ watch([nativeIso, targetIso], loadPractice, { immediate: true })
 
 <template>
   <div class="w-full">
-    <h1 class="text-3xl font-bold mb-6">
-      Practice
-    </h1>
 
     <div
       v-if="isLoading"
