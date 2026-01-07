@@ -65,6 +65,18 @@ watch(() => props.task.gloss.content, () => resetState())
         :flipped="flipped"
         fill
       />
+
+      <div
+        v-if="phase === 'reveal' && task.credits && task.credits.length > 0"
+        class="text-xs text-base-content/60 text-center px-4"
+      >
+        <div
+          v-for="(credit, idx) in task.credits"
+          :key="idx"
+        >
+          {{ credit }}
+        </div>
+      </div>
     </div>
 
     <div class="mt-auto flex justify-center">

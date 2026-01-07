@@ -191,7 +191,8 @@ const buildChallengeTask = (sentence: ActiveSentence): ActiveTask => ({
   sentenceKey: sentence.key,
   data: {
     gloss: toTaskText(sentence.data.sentence, sentence.key),
-    translations: buildTranslations(sentence.data.translations)
+    translations: buildTranslations(sentence.data.translations),
+    credits: sentence.data.credits
   }
 })
 
@@ -332,7 +333,6 @@ watch([nativeIso, targetIso], loadPractice, { immediate: true })
 
 <template>
   <div class="w-full">
-
     <div
       v-if="isLoading"
       class="flex justify-center py-6"
