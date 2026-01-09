@@ -41,6 +41,11 @@ const startTimer = () => {
 
 const progressWidth = computed(() => `${(remainingMs.value / durationMs) * 100}%`)
 
+const handleCardClick = () => {
+  stopTimer()
+  emit('taskDone')
+}
+
 const cardRows = computed<IndexCardRow[]>(() => {
   const translationRows = props.task.translations.map(translation => (
     { type: 'text', text: translation.content, size: 'auto' } as IndexCardRow
@@ -68,6 +73,8 @@ onBeforeUnmount(stopTimer)
       <IndexCard
         :rows="cardRows"
         fill
+        class="cursor-pointer"
+        @click="handleCardClick"
       />
 
       <div class="w-full bg-base-200 h-2 rounded">
