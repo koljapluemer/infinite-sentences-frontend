@@ -261,12 +261,10 @@ const requestNextTask = () => {
 const handleTaskDone = (rememberedCorrectly?: boolean) => {
   if (!currentTask.value) return
 
-  practiceStore.recordTaskCompleted()
-
   if (currentTask.value.kind === 'challenge') {
     const sentenceKey = currentTask.value.sentenceKey
     practiceStore.markSentenceLearned(sentenceKey)
-    practiceStore.recordSentenceCompleted()
+    practiceStore.recordSentenceCompleted(targetIso.value)
     finalQueue.value = finalQueue.value.filter(key => key !== sentenceKey)
     activeSentences.value = activeSentences.value.filter(sentence => sentence.key !== sentenceKey)
     currentTask.value = null

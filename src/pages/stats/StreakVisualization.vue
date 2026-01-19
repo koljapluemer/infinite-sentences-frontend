@@ -19,7 +19,7 @@ const last14Days = computed<DayData[]>(() => {
     const date = subDays(today, i)
     const dateStr = format(date, 'yyyy-MM-dd')
 
-    const chartData = practiceStore.getLast14DaysTaskCounts()
+    const chartData = practiceStore.getLast14DaysSentenceCounts()
     const dayData = chartData.find(d => d.date === dateStr)
     const practiced = dayData ? dayData.count > 0 : false
 
@@ -59,7 +59,7 @@ const streak = computed<number>(() => {
 </script>
 
 <template>
-  <div class="flex items-center gap-4">
+  <div class="flex items-center gap-4 overflow-x-auto">
     <div class="flex gap-1">
       <div
         v-for="(day, index) in last14Days"
@@ -68,12 +68,12 @@ const streak = computed<number>(() => {
       >
         <Flame
           v-if="day.practiced"
-          :size="20"
+          :size="16"
           class="text-orange-500"
         />
         <Circle
           v-else
-          :size="20"
+          :size="16"
         />
       </div>
     </div>

@@ -31,8 +31,8 @@ export const usePracticeStore = defineStore('practice-tracking', {
     seenGlosses: {} as TimestampMap,
     glossStreaks: {} as Record<string, string>, // "streak:datetime"
     learnedSentences: {} as TimestampMap,
-    dailyTaskCounts: {} as DailyCountMap,
-    dailySentenceCounts: {} as DailyCountMap
+    dailySentenceCounts: {} as DailyCountMap,
+    dailySentenceCountsByLanguage: {} as DailyCountMap // key: "yyyy-MM-dd:languageIso"
   }),
 
   actions: {
@@ -100,34 +100,14 @@ export const usePracticeStore = defineStore('practice-tracking', {
       return !!this.learnedSentences[sentenceKey]
     },
 
-    recordTaskCompleted() {
-      const today = formatDay(new Date())
-      this.dailyTaskCounts[today] = (this.dailyTaskCounts[today] ?? 0) + 1
-    },
-
-    recordSentenceCompleted() {
+    recordSentenceCompleted(targetIso?: string) {
       const today = formatDay(new Date())
       this.dailySentenceCounts[today] = (this.dailySentenceCounts[today] ?? 0) + 1
-    },
 
-    getLast14DaysTaskCounts(): Array<{ date: string; count: number }> {
-      const today = new Date()
-      const fourteenDaysAgo = new Date(today)
-      fourteenDaysAgo.setDate(today.getDate() - 13)
-
-      const result = []
-      for (let i = 0; i < 14; i++) {
-        const date = new Date(fourteenDaysAgo)
-        date.setDate(fourteenDaysAgo.getDate() + i)
-        const dateStr = formatDay(date)
-
-        result.push({
-          date: dateStr,
-          count: this.dailyTaskCounts[dateStr] || 0
-        })
+      if (targetIso) {
+        const key = `${today}:${targetIso}`
+        this.dailySentenceCountsByLanguage[key] = (this.dailySentenceCountsByLanguage[key] ?? 0) + 1
       }
-
-      return result
     },
 
     getLast14DaysSentenceCounts(): Array<{ date: string; count: number }> {
@@ -150,20 +130,50 @@ export const usePracticeStore = defineStore('practice-tracking', {
       return result
     },
 
+    getLast14DaysSentenceCountsByLanguage(): Array<{ date: string; counts: Record<string, number> }> {
+      const today = new Date()
+      const fourteenDaysAgo = new Date(today)
+      fourteenDaysAgo.setDate(today.getDate() - 13)
+
+      const result = []
+      for (let i = 0; i < 14; i++) {
+        const date = new Date(fourteenDaysAgo)
+        date.setDate(fourteenDaysAgo.getDate() + i)
+        const dateStr = formatDay(date)
+
+        const counts: Record<string, number> = {}
+        for (const [key, count] of Object.entries(this.dailySentenceCountsByLanguage)) {
+          const [keyDate, lang] = key.split(':')
+          if (keyDate === dateStr && lang) {
+            counts[lang] = count
+          }
+        }
+
+        result.push({ date: dateStr, counts })
+      }
+
+      return result
+    },
+
+    getAllPracticedLanguages(): string[] {
+      const languages = new Set<string>()
+      for (const key of Object.keys(this.dailySentenceCountsByLanguage)) {
+        const lang = key.split(':')[1]
+        if (lang) languages.add(lang)
+      }
+      return Array.from(languages).sort()
+    },
+
     wasActiveToday(): boolean {
       const today = formatDay(new Date())
-      const tasks = this.dailyTaskCounts[today] || 0
-      if (tasks > 0) return true
-
-      const sentences = this.dailySentenceCounts[today] || 0
-      return sentences > 0
+      return (this.dailySentenceCounts[today] || 0) > 0
     },
 
     wasActiveOnDate(dateString: string): boolean {
       const date = parse(dateString, 'yyyy-MM-dd', new Date())
       if (!date || Number.isNaN(date.getTime())) return false
       const day = formatDay(date)
-      return (this.dailyTaskCounts[day] || 0) > 0 || (this.dailySentenceCounts[day] || 0) > 0
+      return (this.dailySentenceCounts[day] || 0) > 0
     }
   },
 

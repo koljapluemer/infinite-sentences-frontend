@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { usePracticeStore } from '@/entities/practice-tracking/practiceStore'
 import DailyCountsChart from './DailyCountsChart.vue'
 import StreakVisualization from './StreakVisualization.vue'
 
 const practiceStore = usePracticeStore()
-
-const taskChartData = computed(() => practiceStore.getLast14DaysTaskCounts())
-const sentenceChartData = computed(() => practiceStore.getLast14DaysSentenceCounts())
 </script>
 
 <template>
@@ -25,22 +21,9 @@ const sentenceChartData = computed(() => practiceStore.getLast14DaysSentenceCoun
 
     <div class="mb-6">
       <h2 class="text-xl font-semibold mb-4">
-        Tasks Done
-      </h2>
-      <DailyCountsChart
-        :data="taskChartData"
-        label="Tasks"
-      />
-    </div>
-
-    <div class="mb-6">
-      <h2 class="text-xl font-semibold mb-4">
         Sentences Done
       </h2>
-      <DailyCountsChart
-        :data="sentenceChartData"
-        label="Sentences"
-      />
+      <DailyCountsChart :practice-store="practiceStore" />
     </div>
   </div>
 </template>

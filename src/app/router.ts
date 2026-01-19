@@ -16,6 +16,11 @@ const router = createRouter({
       component: () => import('@/pages/stats/StatsPage.vue')
     },
     {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('@/pages/settings/SettingsPage.vue')
+    },
+    {
       path: '/learn',
       name: 'select-native-language',
       component: SelectNativeLanguagePage
