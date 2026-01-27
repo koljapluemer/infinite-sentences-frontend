@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { getLanguageInfo, type LanguageInfo } from '@/entities/language'
+import LanguageSymbols from '@/dumb/LanguageSymbols.vue'
 
 const route = useRoute()
 const nativeIso = computed(() => route.params.nativeIso as string)
@@ -99,9 +100,7 @@ watch(() => nativeIso.value, () => {
         class="card shadow bg-white text-gray-700 transition-hover hover:shadow-md cursor-pointer"
       >
         <div class="card-body gap-4 grid place-items-center text-center">
-          <div class="text-6xl">
-            {{ lang.symbol }}
-          </div>
+          <LanguageSymbols :symbols="lang.symbols" />
           <h2 class="text-2xl font-semibold">
             {{ lang.displayName }}
           </h2>

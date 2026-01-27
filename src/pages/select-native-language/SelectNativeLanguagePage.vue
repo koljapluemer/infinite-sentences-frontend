@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { getLanguageInfo, type LanguageInfo } from '@/entities/language'
+import LanguageSymbols from '@/dumb/LanguageSymbols.vue'
 
 const nativeLanguages = ref<LanguageInfo[]>([])
 const loading = ref(false)
@@ -62,9 +63,7 @@ onMounted(async () => {
         class="card shadow bg-white text-gray-700 transition-hover hover:shadow-md cursor-pointer"
       >
         <div class="card-body gap-4 grid place-items-center text-center">
-          <div class="text-6xl">
-            {{ lang.symbol }}
-          </div>
+          <LanguageSymbols :symbols="lang.symbols" />
           <h2 class="text-2xl font-semibold">
             {{ lang.displayName }}
           </h2>

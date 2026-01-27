@@ -2,6 +2,7 @@ export type LanguageInfo = {
   iso: string
   displayName: string
   symbol: string
+  symbols: string[]
 }
 
 let languageDataCache: Record<string, { displayName: string, symbols: string[] }> | null = null
@@ -23,10 +24,12 @@ export async function getLanguageInfo(iso: string): Promise<LanguageInfo> {
   }
 
   const data = languageDataCache?.[iso]
+  const symbols = data?.symbols || []
   return {
     iso,
     displayName: data?.displayName || iso,
-    symbol: data?.symbols?.[0] || ''
+    symbol: symbols[0] || '',
+    symbols
   }
 }
 
