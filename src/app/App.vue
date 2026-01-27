@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import AppHeader from '@/dumb/AppHeader.vue'
+import AppFooter from '@/dumb/AppFooter.vue'
 </script>
 
 <template>
@@ -9,6 +10,7 @@ import AppHeader from '@/dumb/AppHeader.vue'
     <main class="flex-1 container mx-auto p-4 items-center justify-center flex flex-col">
       <RouterView />
     </main>
+    <AppFooter />
   </div>
 </template>
 

@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { getLanguageInfo, type LanguageInfo } from '@/entities/language'
 import LanguageSymbols from '@/dumb/LanguageSymbols.vue'
+import { useLanguagePreferencesStore } from '@/entities/language-preferences/languagePreferencesStore'
+
+const router = useRouter()
+const languagePreferences = useLanguagePreferencesStore()
 
 const nativeLanguages = ref<LanguageInfo[]>([])
 const loading = ref(false)
 const error = ref(false)
+
+function selectNativeLanguage(iso: string) {
+  // Clear target when native changes
+  languagePreferences.clearLanguages()
+  router.push(`/learn/${iso}`)
+}
 
 onMounted(async () => {
   try {
@@ -56,11 +66,11 @@ onMounted(async () => {
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
     >
-      <RouterLink
+      <button
         v-for="lang in nativeLanguages"
         :key="lang.iso"
-        :to="`/learn/${lang.iso}`"
         class="card shadow bg-white text-gray-700 transition-hover hover:shadow-md cursor-pointer"
+        @click="selectNativeLanguage(lang.iso)"
       >
         <div class="card-body gap-4 grid place-items-center text-center">
           <LanguageSymbols :symbols="lang.symbols" />
@@ -68,7 +78,7 @@ onMounted(async () => {
             {{ lang.displayName }}
           </h2>
         </div>
-      </RouterLink>
+      </button>
     </div>
   </div>
 </template>

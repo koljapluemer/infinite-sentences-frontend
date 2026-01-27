@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { getLanguageInfo, type LanguageInfo } from '@/entities/language'
 import LanguageSymbols from '@/dumb/LanguageSymbols.vue'
+import { useLanguagePreferencesStore } from '@/entities/language-preferences/languagePreferencesStore'
 
 const route = useRoute()
+const router = useRouter()
+const languagePreferences = useLanguagePreferencesStore()
 const nativeIso = computed(() => route.params.nativeIso as string)
+
+function selectTargetLanguage(targetIso: string) {
+  languagePreferences.setLanguages(nativeIso.value, targetIso)
+  router.push(`/learn/${nativeIso.value}/${targetIso}`)
+}
 
 const nativeLanguage = ref<LanguageInfo | null>(null)
 const targetLanguages = ref<LanguageInfo[]>([])
@@ -93,11 +101,11 @@ watch(() => nativeIso.value, () => {
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
     >
-      <RouterLink
+      <button
         v-for="lang in targetLanguages"
         :key="lang.iso"
-        :to="`/learn/${nativeIso}/${lang.iso}`"
         class="card shadow bg-white text-gray-700 transition-hover hover:shadow-md cursor-pointer"
+        @click="selectTargetLanguage(lang.iso)"
       >
         <div class="card-body gap-4 grid place-items-center text-center">
           <LanguageSymbols :symbols="lang.symbols" />
@@ -105,7 +113,7 @@ watch(() => nativeIso.value, () => {
             {{ lang.displayName }}
           </h2>
         </div>
-      </RouterLink>
+      </button>
     </div>
   </div>
 </template>
