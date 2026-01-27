@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useLanguagePreferencesStore } from '@/entities/language-preferences/languagePreferencesStore'
 import { getLanguageInfo, type LanguageInfo } from '@/entities/language'
 
+const router = useRouter()
 const store = useLanguagePreferencesStore()
 
 const nativeLanguage = ref<LanguageInfo | null>(null)
@@ -26,6 +27,17 @@ watchEffect(async () => {
 })
 
 const showFooter = computed(() => store.hasLanguagesSet)
+
+const changeNativeLanguage = () => {
+  store.clearLanguages()
+  router.push('/learn')
+}
+
+const changeTargetLanguage = () => {
+  const nativeIso = store.nativeIso
+  store.targetIso = null
+  router.push(`/learn/${nativeIso}`)
+}
 </script>
 
 <template>
@@ -33,20 +45,20 @@ const showFooter = computed(() => store.hasLanguagesSet)
     v-if="showFooter"
     class="text-center py-2 text-light text-sm"
   >
-    <RouterLink
-      to="/learn"
+    <button
       class="hover:underline"
       :title="`Change native language (${nativeLanguage?.displayName})`"
+      @click="changeNativeLanguage"
     >
       {{ nativeLanguage?.symbol || store.nativeIso }}
-    </RouterLink>
+    </button>
     <span class="mx-1">&rarr;</span>
-    <RouterLink
-      :to="`/learn/${store.nativeIso}`"
+    <button
       class="hover:underline"
       :title="`Change target language (${targetLanguage?.displayName})`"
+      @click="changeTargetLanguage"
     >
       {{ targetLanguage?.symbol || store.targetIso }}
-    </RouterLink>
+    </button>
   </footer>
 </template>

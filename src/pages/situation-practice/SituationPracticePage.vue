@@ -100,7 +100,7 @@ const getAvailableSentenceIndices = (): number[] => {
   if (maxIndex.value === null) return []
   const activeIndices = new Set(activeSentences.value.map(sentence => sentence.index))
   const candidates: number[] = []
-  for (let i = 0; i <= maxIndex.value; i += 1) {
+  for (let i = 1; i <= maxIndex.value; i += 1) {
     const sentenceKey = buildSentenceKey(nativeIso.value, targetIso.value, i)
     if (activeIndices.has(i)) continue
     if (practiceStore.isSentenceLearned(sentenceKey)) continue
