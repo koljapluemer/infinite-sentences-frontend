@@ -11,7 +11,7 @@ let languageDataFailed = false
 export async function getLanguageInfo(iso: string): Promise<LanguageInfo> {
   if (!languageDataCache && !languageDataFailed) {
     try {
-      const response = await fetch('/glosses4learning-language-reference/glosses4learning-language-reference/languages.json')
+      const response = await fetch('languages.json')
       if (!response.ok) {
         throw new Error(`Failed to load language metadata: ${response.status}`)
       }
