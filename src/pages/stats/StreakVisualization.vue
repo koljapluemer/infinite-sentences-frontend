@@ -29,33 +29,7 @@ const last14Days = computed<DayData[]>(() => {
   return days
 })
 
-const streak = computed<number>(() => {
-  const days = last14Days.value
-  let currentStreak = 0
-  let missedOne = false
-
-  // Start from the most recent day and go backwards
-  for (let i = days.length - 1; i >= 0; i--) {
-    const day = days[i]
-    if (!day) continue
-
-    if (day.practiced) {
-      currentStreak++
-      missedOne = false
-    } else {
-      // Didn't practice this day
-      if (missedOne) {
-        // Already missed one day, this breaks the streak
-        break
-      } else {
-        // First miss, allow it but don't count it
-        missedOne = true
-      }
-    }
-  }
-
-  return currentStreak
-})
+const streak = computed<number>(() => practiceStore.getCurrentStreak())
 </script>
 
 <template>

@@ -174,6 +174,35 @@ export const usePracticeStore = defineStore('practice-tracking', {
       if (!date || Number.isNaN(date.getTime())) return false
       const day = formatDay(date)
       return (this.dailySentenceCounts[day] || 0) > 0
+    },
+
+    getCurrentStreak(): number {
+      const today = new Date()
+      let currentStreak = 0
+      let missedOne = false
+
+      // Start from today and go backwards through all recorded history
+      for (let i = 0; i < 365 * 10; i++) { // Check up to 10 years back
+        const date = new Date(today)
+        date.setDate(today.getDate() - i)
+        const dateStr = formatDay(date)
+        const practiced = (this.dailySentenceCounts[dateStr] || 0) > 0
+
+        if (practiced) {
+          currentStreak++
+          missedOne = false
+        } else {
+          if (missedOne) {
+            // Already missed one day, this breaks the streak
+            break
+          } else {
+            // First miss, allow it but don't count it
+            missedOne = true
+          }
+        }
+      }
+
+      return currentStreak
     }
   },
 
