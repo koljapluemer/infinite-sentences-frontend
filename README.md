@@ -1,39 +1,41 @@
-# SBLL Frontend
+# Infinite Sentences Frontend
 
-Language learning app built with Vue 3, TypeScript, and Vite.
+![](screenshot.png)
 
-## Tech Stack
+Data-driven language learning app.
+Practice the vocabulary needed to understand a natural language sentence. Rinse, Repeat.
 
-- Vue 3 with `<script setup>` SFCs
-- TypeScript
-- Vite
-- Tailwind CSS + DaisyUI
-- Vue Router
-- Pinia (state management)
-- ESLint 9 (flat config)
-
-## Development
+## Run
 
 ```bash
-# Install dependencies
 npm install
-
-# Run dev server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
-
-# Fix linting issues
-npm run lint:fix
+npm run dev      # dev server
+npm run build    # production build
+npm run lint     # lint
 ```
 
 ## Architecture
 
-See also [the developer guidelines](developer-guidelines.md) for detailed architecture and design guidelines.
+```
+src/
+├── app/              # App shell, router
+├── pages/
+│   ├── situation-practice/   # Main practice flow
+│   │   └── tasks/            # Task types (memorize, recall, understand, challenge)
+│   ├── stats/                # Progress stats, streaks
+│   └── settings/             # User preferences
+├── entities/
+│   ├── practice-tracking/    # Pinia store for progress, streaks, daily counts
+│   ├── user-settings/        # Pinia store for goals
+│   ├── sentences/            # Sentence data loading
+│   └── gloss/                # Vocabulary schema/types
+└── dumb/                     # Stateless UI components
+```
+
+## Data
+
+Sentence data loaded from `/infinite-sentences-data/{nativeIso}/{targetIso}/`. (via a git submodule)
+
+## Tech
+
+Vue 3, TypeScript, Vite, Tailwind + DaisyUI, Pinia, PWA.
