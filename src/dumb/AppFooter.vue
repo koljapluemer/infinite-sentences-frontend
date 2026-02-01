@@ -43,7 +43,7 @@ const changeTargetLanguage = () => {
 <template>
   <footer
     v-if="showFooter"
-    class="text-center py-2 text-light text-sm"
+    class="text-center py-2 text-light text-sm mt-10"
   >
     <button
       class="hover:underline"

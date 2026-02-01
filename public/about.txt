@@ -1,6 +1,0 @@
-This favicon was generated using the following font:
-
-- Font Title: Cabin
-- Font Author: undefined
-- Font Source: https://fonts.gstatic.com/s/cabin/v34/u-4V0qWljRw-Pd815fNqc8T_wAFcX-c37MPiNYlWniJ2hJXHIPWlwkzuA_u1Bg.ttf
-- Font License: undefined)

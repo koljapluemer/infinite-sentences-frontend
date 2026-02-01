@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { format } from 'date-fns'
 import { pickRandom, takeRandom } from '@/dumb/random'
 import { usePracticeStore } from '@/entities/practice-tracking/practiceStore'
+import { useUserSettingsStore } from '@/entities/user-settings/userSettingsStore'
 import { loadSentenceByIndex, loadSentenceIndexMax } from '@/entities/sentences/repository'
 import { buildPartKey, buildSentenceKey } from '@/entities/sentences/keys'
 import type { SentenceData, SentencePart } from '@/entities/sentences/types'
@@ -38,9 +40,17 @@ type ActiveTask =
 
 const route = useRoute()
 const practiceStore = usePracticeStore()
+const userSettingsStore = useUserSettingsStore()
 
 const nativeIso = computed(() => String(route.params.nativeIso ?? ''))
 const targetIso = computed(() => String(route.params.targetIso ?? ''))
+
+const todayCount = computed(() => {
+  const today = format(new Date(), 'yyyy-MM-dd')
+  return practiceStore.dailySentenceCounts[today] ?? 0
+})
+const progressPercent = computed(() => Math.min(100, (todayCount.value / userSettingsStore.dailySentenceGoal) * 100))
+const goalReached = computed(() => todayCount.value >= userSettingsStore.dailySentenceGoal)
 
 const basePath = computed(() => `/infinite-sentences-data/${nativeIso.value}/${targetIso.value}`)
 
@@ -330,55 +340,34 @@ watch([nativeIso, targetIso], loadPractice, { immediate: true })
 </script>
 
 <template>
-  <div class="w-full">
-    <div
-      v-if="isLoading"
-      class="flex justify-center py-6"
-    >
+  <div class="w-full h-0.5">
+    <div :class="goalReached ? 'bg-success' : 'bg-primary'" class="h-full transition-all duration-300"
+      :style="{ width: `${progressPercent}%` }" />
+  </div>
+
+  <div v-if="isLoading" class="flex justify-center py-6">
+    <span class="loading loading-spinner loading-lg" />
+  </div>
+
+  <div v-else-if="errorMessage" class="alert alert-warning">
+    {{ errorMessage }}
+  </div>
+
+  <div v-else class="w-full flex justify-around flex-1">
+    <MemorizeFromTargetTask v-if="currentTask?.kind === 'memorize'" :task="currentTask.data"
+      @task-done="handleTaskDone" />
+
+    <UnderstandTargetFromSentenceTask v-else-if="currentTask?.kind === 'understand'" :task="currentTask.data"
+      @task-done="handleTaskDone" />
+
+    <RecallFromTargetTask v-else-if="currentTask?.kind === 'recall'" :task="currentTask.data"
+      @task-done="handleTaskDone" />
+
+    <ChallengeTryToUnderstandTask v-else-if="currentTask?.kind === 'challenge'" :task="currentTask.data"
+      @task-done="handleTaskDone" />
+
+    <div v-else class="flex justify-center py-6">
       <span class="loading loading-spinner loading-lg" />
-    </div>
-
-    <div
-      v-else-if="errorMessage"
-      class="alert alert-warning"
-    >
-      {{ errorMessage }}
-    </div>
-
-    <div
-      v-else
-      class="w-full flex justify-center"
-    >
-      <MemorizeFromTargetTask
-        v-if="currentTask?.kind === 'memorize'"
-        :task="currentTask.data"
-        @task-done="handleTaskDone"
-      />
-
-      <UnderstandTargetFromSentenceTask
-        v-else-if="currentTask?.kind === 'understand'"
-        :task="currentTask.data"
-        @task-done="handleTaskDone"
-      />
-
-      <RecallFromTargetTask
-        v-else-if="currentTask?.kind === 'recall'"
-        :task="currentTask.data"
-        @task-done="handleTaskDone"
-      />
-
-      <ChallengeTryToUnderstandTask
-        v-else-if="currentTask?.kind === 'challenge'"
-        :task="currentTask.data"
-        @task-done="handleTaskDone"
-      />
-
-      <div
-        v-else
-        class="flex justify-center py-6"
-      >
-        <span class="loading loading-spinner loading-lg" />
-      </div>
     </div>
   </div>
 </template>

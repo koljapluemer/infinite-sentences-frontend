@@ -42,9 +42,6 @@ const changeTargetLanguage = () => {
 
 <template>
   <div class="w-full max-w-md">
-    <h1 class="text-3xl font-bold mb-6">
-      Settings
-    </h1>
 
     <fieldset class="fieldset">
       <label

@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import ShowInstruction from '../../elements/ShowInstruction.vue'
 import IndexCard from '../../elements/IndexCard.vue'
+import InteractionButtonRow from '../../elements/InteractionButtonRow.vue'
 import type { IndexCardRow } from '../../elements/types'
 import type { MemorizeFromTargetTask } from './interface'
 
@@ -84,5 +85,10 @@ onBeforeUnmount(stopTimer)
         />
       </div>
     </div>
+
+    <InteractionButtonRow
+      :icons="['SkipForward']"
+      @select="handleCardClick"
+    />
   </div>
 </template>

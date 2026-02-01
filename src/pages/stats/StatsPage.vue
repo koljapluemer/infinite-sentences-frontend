@@ -8,10 +8,6 @@ const practiceStore = usePracticeStore()
 
 <template>
   <div class="w-full max-w-full">
-    <h1 class="text-3xl font-bold mb-6">
-      Stats
-    </h1>
-
     <div class="mb-6">
       <h2 class="text-xl font-semibold mb-4">
         Streak
