@@ -341,32 +341,59 @@ watch([nativeIso, targetIso], loadPractice, { immediate: true })
 
 <template>
   <div class="w-full h-0.5">
-    <div :class="goalReached ? 'bg-success' : 'bg-primary'" class="h-full transition-all duration-300"
-      :style="{ width: `${progressPercent}%` }" />
+    <div
+      :class="goalReached ? 'bg-success' : 'bg-primary'"
+      class="h-full transition-all duration-300"
+      :style="{ width: `${progressPercent}%` }"
+    />
   </div>
 
-  <div v-if="isLoading" class="flex justify-center py-6">
+  <div
+    v-if="isLoading"
+    class="flex justify-center py-6"
+  >
     <span class="loading loading-spinner loading-lg" />
   </div>
 
-  <div v-else-if="errorMessage" class="alert alert-warning">
+  <div
+    v-else-if="errorMessage"
+    class="alert alert-warning"
+  >
     {{ errorMessage }}
   </div>
 
-  <div v-else class="w-full flex justify-around flex-1">
-    <MemorizeFromTargetTask v-if="currentTask?.kind === 'memorize'" :task="currentTask.data"
-      @task-done="handleTaskDone" />
+  <div
+    v-else
+    class="w-full flex justify-around flex-1"
+  >
+    <MemorizeFromTargetTask
+      v-if="currentTask?.kind === 'memorize'"
+      :task="currentTask.data"
+      @task-done="handleTaskDone"
+    />
 
-    <UnderstandTargetFromSentenceTask v-else-if="currentTask?.kind === 'understand'" :task="currentTask.data"
-      @task-done="handleTaskDone" />
+    <UnderstandTargetFromSentenceTask
+      v-else-if="currentTask?.kind === 'understand'"
+      :task="currentTask.data"
+      @task-done="handleTaskDone"
+    />
 
-    <RecallFromTargetTask v-else-if="currentTask?.kind === 'recall'" :task="currentTask.data"
-      @task-done="handleTaskDone" />
+    <RecallFromTargetTask
+      v-else-if="currentTask?.kind === 'recall'"
+      :task="currentTask.data"
+      @task-done="handleTaskDone"
+    />
 
-    <ChallengeTryToUnderstandTask v-else-if="currentTask?.kind === 'challenge'" :task="currentTask.data"
-      @task-done="handleTaskDone" />
+    <ChallengeTryToUnderstandTask
+      v-else-if="currentTask?.kind === 'challenge'"
+      :task="currentTask.data"
+      @task-done="handleTaskDone"
+    />
 
-    <div v-else class="flex justify-center py-6">
+    <div
+      v-else
+      class="flex justify-center py-6"
+    >
       <span class="loading loading-spinner loading-lg" />
     </div>
   </div>

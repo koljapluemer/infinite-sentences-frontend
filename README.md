@@ -34,7 +34,7 @@ src/
 
 ## Data
 
-Sentence data loaded from `/infinite-sentences-data/{nativeIso}/{targetIso}/`. (via a git submodule)
+Sentence data loaded from `/infinite-sentences-data/out/{nativeIso}/{targetIso}/`. (via a git submodule)
 
 ## Tech
 

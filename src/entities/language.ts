@@ -5,25 +5,22 @@ export type LanguageInfo = {
   symbols: string[]
 }
 
-let languageDataCache: Record<string, { displayName: string, symbols: string[] }> | null = null
-let languageDataFailed = false
+type LanguageDataMap = Record<string, { displayName: string, symbols: string[] }>
 
 export async function getLanguageInfo(iso: string): Promise<LanguageInfo> {
-  if (!languageDataCache && !languageDataFailed) {
-    try {
-      const response = await fetch('languages.json')
-      if (!response.ok) {
-        throw new Error(`Failed to load language metadata: ${response.status}`)
-      }
-      languageDataCache = await response.json()
-    } catch (error) {
-      console.warn('Language metadata not available yet:', error)
-      languageDataCache = {}
-      languageDataFailed = true
+  let languageData: LanguageDataMap = {}
+
+  try {
+    const response = await fetch('/infinite-sentences-data/out/languages.json')
+    if (!response.ok) {
+      throw new Error(`Failed to load language metadata: ${response.status}`)
     }
+    languageData = await response.json() as LanguageDataMap
+  } catch (error) {
+    console.warn('Language metadata not available:', error)
   }
 
-  const data = languageDataCache?.[iso]
+  const data = languageData[iso]
   const symbols = data?.symbols || []
   return {
     iso,

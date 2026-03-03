@@ -42,7 +42,6 @@ const changeTargetLanguage = () => {
 
 <template>
   <div class="w-full max-w-md">
-
     <fieldset class="fieldset">
       <label
         for="daily-goal"
