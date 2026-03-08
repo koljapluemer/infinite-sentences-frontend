@@ -16,7 +16,12 @@
 <body class="h-full">
   <div id="app" class="h-full flex flex-col items-center justify-between"></div>
   <script type="module" src="/src/app/main.ts"></script>
-  <script data-goatcounter="https://sbll.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script>
+    window.goatcounter = {
+      path: function (p) { return location.host + p }
+    }
+  </script>
+  <script data-goatcounter="https://koljasam.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 
 </html>

@@ -5,6 +5,8 @@
 Data-driven language learning app.
 Practice the vocabulary needed to understand a natural language sentence. Rinse, Repeat.
 
+### [check it out here](https://infi.koljasam.com/)
+
 ## Run
 
 ```bash
