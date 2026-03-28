@@ -51,7 +51,7 @@ watch(() => props.task.gloss.content, () => resetState())
     <div>
       <ShowInstruction
         v-if="phase === 'prompt'"
-        content="Can you understand this?"
+        content="Can you understand this? Try to translate, then reveal."
       />
     </div>
 
