@@ -23,7 +23,7 @@ onMounted(async () => {
     loading.value = true
 
     // Load available native language ISOs
-    const availableIsos = await fetch('/infinite-sentences-data/out/native_languages.json')
+    const availableIsos = await fetch('/infinite-sentences-data/native_languages.json')
       .then(res => res.json()) as string[]
 
     // Load language details

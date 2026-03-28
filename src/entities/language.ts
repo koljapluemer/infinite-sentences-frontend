@@ -11,7 +11,7 @@ export async function getLanguageInfo(iso: string): Promise<LanguageInfo> {
   let languageData: LanguageDataMap = {}
 
   try {
-    const response = await fetch('/infinite-sentences-data/out/languages.json')
+    const response = await fetch('/infinite-sentences-data/languages.json')
     if (!response.ok) {
       throw new Error(`Failed to load language metadata: ${response.status}`)
     }

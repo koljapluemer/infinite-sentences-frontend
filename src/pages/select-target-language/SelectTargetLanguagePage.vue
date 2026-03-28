@@ -31,7 +31,7 @@ async function loadLanguages() {
     nativeLanguage.value = await getLanguageInfo(nativeIso.value)
 
     // Load available target languages for this native language
-    const availableTargetIsos = await fetch(`/infinite-sentences-data/out/${nativeIso.value}/target_languages.json`)
+    const availableTargetIsos = await fetch(`/infinite-sentences-data/${nativeIso.value}/target_languages.json`)
       .then(res => res.json()) as string[]
 
     // Load target language details

@@ -22,27 +22,27 @@ This document describes how language selection and language metadata currently w
 
 ### 2) Language metadata (names/symbols)
 
-- Source file: `public/infinite-sentences-data/out/languages.json`
+- Source file: `public/infinite-sentences-data/languages.json`
 - Loader: `getLanguageInfo()` in `src/entities/language.ts`
 - Not cached; fetched per call (file is intentionally tiny)
 - Fallback behavior: if metadata load fails, returns `displayName = iso` and empty symbols.
 
 ### 3) Which native languages are available for learning
 
-- Current fetch call: `/infinite-sentences-data/out/native_languages.json`
+- Current fetch call: `/infinite-sentences-data/native_languages.json`
 - Caller: `src/pages/select-native-language/SelectNativeLanguagePage.vue`
 - Intended meaning: list of native ISO codes users can start from.
 
 ### 4) Which targets are available for one native language
 
-- Current fetch call: `/infinite-sentences-data/out/${nativeIso}/target_languages.json`
+- Current fetch call: `/infinite-sentences-data/${nativeIso}/target_languages.json`
 - Caller: `src/pages/select-target-language/SelectTargetLanguagePage.vue`
 - Intended meaning: list of target ISO codes allowed for that native ISO.
 
 ### 5) Practice content for a selected pair
 
 - Base path in practice page:
-  - `/infinite-sentences-data/out/${nativeIso}/${targetIso}`
+  - `/infinite-sentences-data/${nativeIso}/${targetIso}`
 - Caller: `src/pages/situation-practice/SituationPracticePage.vue`
 - Loaded via:
   - `index.txt` (max sentence index)
@@ -86,14 +86,14 @@ This document describes how language selection and language metadata currently w
 
 All language-related data now uses the same base path:
 
-- `/infinite-sentences-data/out/...`
+- `/infinite-sentences-data/...`
 
 This includes:
 
-- metadata: `/infinite-sentences-data/out/languages.json`
-- native language list: `/infinite-sentences-data/out/native_languages.json`
-- target list: `/infinite-sentences-data/out/${nativeIso}/target_languages.json`
-- practice payloads: `/infinite-sentences-data/out/${nativeIso}/${targetIso}/...`
+- metadata: `/infinite-sentences-data/languages.json`
+- native language list: `/infinite-sentences-data/native_languages.json`
+- target list: `/infinite-sentences-data/${nativeIso}/target_languages.json`
+- practice payloads: `/infinite-sentences-data/${nativeIso}/${targetIso}/...`
 
 ## Practical Mental Model
 

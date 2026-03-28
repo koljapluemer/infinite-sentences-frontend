@@ -52,7 +52,7 @@ const todayCount = computed(() => {
 const progressPercent = computed(() => Math.min(100, (todayCount.value / userSettingsStore.dailySentenceGoal) * 100))
 const goalReached = computed(() => todayCount.value >= userSettingsStore.dailySentenceGoal)
 
-const basePath = computed(() => `/infinite-sentences-data/out/${nativeIso.value}/${targetIso.value}`)
+const basePath = computed(() => `/infinite-sentences-data/${nativeIso.value}/${targetIso.value}`)
 
 const maxIndex = ref<number | null>(null)
 const activeSentences = ref<ActiveSentence[]>([])
