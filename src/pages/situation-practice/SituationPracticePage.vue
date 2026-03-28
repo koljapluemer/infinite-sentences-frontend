@@ -283,6 +283,9 @@ const handleTaskDone = (rememberedCorrectly?: boolean) => {
       .then(() => {
         refreshFinalQueue()
         requestNextTask()
+        if (!currentTask.value && !activeSentences.value.length) {
+          errorMessage.value = 'No more sentences to learn. Come back soon!'
+        }
       })
       .catch(error => {
         console.error('Failed to load new sentence:', error)
