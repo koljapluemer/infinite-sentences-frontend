@@ -20,20 +20,18 @@ const phase = ref<'question' | 'answer'>('question')
 const mainFlipped = ref(false)
 const swipeExamples = ref(false)
 
-const questionCard = computed<IndexCardRow[]>(() => [
-  { type: 'text', text: props.task.gloss.content, size: 'auto' }
-])
+const glossRow = computed<IndexCardRow>(() => ({
+  type: 'text', text: props.task.gloss.content, size: 'auto', subtext: props.task.gloss.transcription
+}))
+
+const questionCard = computed<IndexCardRow[]>(() => [glossRow.value])
 
 const finalCard = computed<IndexCardRow[]>(() => {
   const translationRows = props.task.translations.map(translation => (
     { type: 'text', text: translation.content, size: 'auto' } as IndexCardRow
   ))
 
-  return [
-    { type: 'text', text: props.task.gloss.content, size: 'auto' },
-    { type: 'divider' },
-    ...translationRows
-  ]
+  return [glossRow.value, { type: 'divider' }, ...translationRows]
 })
 
 const flip = () => {

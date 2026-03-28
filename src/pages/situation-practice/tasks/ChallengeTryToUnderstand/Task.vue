@@ -20,19 +20,15 @@ const flipped = ref(false)
 const phase = ref<'prompt' | 'reveal'>('prompt')
 
 const cardRows = computed<IndexCardRow[]>(() => {
-  if (phase.value === 'prompt') {
-    return [{ type: 'text', text: props.task.gloss.content, size: 'auto' }]
-  }
+  const glossRow: IndexCardRow = { type: 'text', text: props.task.gloss.content, size: 'auto', subtext: props.task.gloss.transcription }
 
-  const translationRows = props.task.translations.flatMap(translation => ([
+  if (phase.value === 'prompt') return [glossRow]
+
+  const translationRows = props.task.translations.map(translation => (
     { type: 'text', text: translation.content, size: 'auto' } as IndexCardRow
-  ]))
+  ))
 
-  return [
-    { type: 'text', text: props.task.gloss.content, size: 'auto' },
-    { type: 'divider' },
-    ...translationRows
-  ]
+  return [glossRow, { type: 'divider' }, ...translationRows]
 })
 
 const flip = () => {

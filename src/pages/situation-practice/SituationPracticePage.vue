@@ -160,7 +160,7 @@ const buildMemorizeTask = (partKey: string, part: PartEntry): ActiveTask => ({
   kind: 'memorize',
   partKey,
   data: {
-    gloss: toTaskText(part.content, partKey),
+    gloss: { ...toTaskText(part.content, partKey), transcription: part.transcription },
     translations: buildTranslations(part.translations)
   }
 })
@@ -169,7 +169,7 @@ const buildRecallTask = (partKey: string, part: PartEntry): ActiveTask => ({
   kind: 'recall',
   partKey,
   data: {
-    gloss: toTaskText(part.content, partKey),
+    gloss: { ...toTaskText(part.content, partKey), transcription: part.transcription },
     translations: buildTranslations(part.translations)
   }
 })
@@ -189,7 +189,7 @@ const buildUnderstandTask = (partKey: string, part: PartEntry): ActiveTask | nul
     kind: 'understand',
     partKey,
     data: {
-      gloss: toTaskText(part.content, partKey),
+      gloss: { ...toTaskText(part.content, partKey), transcription: part.transcription },
       translations: buildTranslations(part.translations),
       examples
     }
@@ -200,7 +200,7 @@ const buildChallengeTask = (sentence: ActiveSentence): ActiveTask => ({
   kind: 'challenge',
   sentenceKey: sentence.key,
   data: {
-    gloss: toTaskText(sentence.data.sentence, sentence.key),
+    gloss: { ...toTaskText(sentence.data.sentence, sentence.key), transcription: sentence.data.transcription },
     translations: buildTranslations(sentence.data.translations),
     credits: sentence.data.credits
   }

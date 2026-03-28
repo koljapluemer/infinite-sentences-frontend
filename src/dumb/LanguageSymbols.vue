@@ -16,10 +16,21 @@ const count = computed(() => props.symbols.length)
 </script>
 
 <template>
-  <div class="language-symbols" :class="`layout-${count}`">
-    <span v-for="(symbol, i) in shuffledSymbols" v-if="shuffledSymbols.length != 0" :key="i" class="symbol font-bold"
-      :class="`symbol-${i + 1}`">{{ symbol }}</span>
-    <span v-else class="symbol font-bold">💬</span>
+  <div
+    class="language-symbols"
+    :class="`layout-${count}`"
+  >
+    <span
+      v-for="(symbol, i) in shuffledSymbols"
+      v-if="shuffledSymbols.length != 0"
+      :key="i"
+      class="symbol font-bold"
+      :class="`symbol-${i + 1}`"
+    >{{ symbol }}</span>
+    <span
+      v-else
+      class="symbol font-bold"
+    >💬</span>
   </div>
 </template>
 

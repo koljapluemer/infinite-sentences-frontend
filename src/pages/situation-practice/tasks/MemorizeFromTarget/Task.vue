@@ -53,7 +53,7 @@ const cardRows = computed<IndexCardRow[]>(() => {
   ))
 
   return [
-    { type: 'text', text: props.task.gloss.content, size: 'auto' },
+    { type: 'text', text: props.task.gloss.content, size: 'auto', subtext: props.task.gloss.transcription },
     { type: 'divider' },
     ...translationRows
   ]

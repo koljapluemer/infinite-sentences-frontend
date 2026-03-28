@@ -47,12 +47,20 @@ const textClass = (row: IndexCardRow) => {
           v-if="row.type === 'divider'"
           class="w-full border-b-2 border-dotted"
         />
-        <p
+        <div
           v-else
-          :class="textClass(row)"
+          class="flex flex-col items-center gap-1"
         >
-          {{ row.text }}
-        </p>
+          <p :class="textClass(row)">
+            {{ row.text }}
+          </p>
+          <p
+            v-if="row.subtext"
+            class="text-sm text-gray-400"
+          >
+            {{ row.subtext }}
+          </p>
+        </div>
       </template>
     </div>
   </div>

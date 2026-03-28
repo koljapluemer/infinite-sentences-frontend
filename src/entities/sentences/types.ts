@@ -4,6 +4,7 @@ export type SentencePart = {
   content: string
   translations: string[]
   usageExamples?: UsageExample[]
+  transcription?: string
 }
 
 export type SentenceData = {
@@ -11,4 +12,5 @@ export type SentenceData = {
   credits?: string[]
   translations: string[]
   parts: SentencePart[]
+  transcription?: string
 }

@@ -1,6 +1,7 @@
 export type TaskText = {
   ref?: string
   content: string
+  transcription?: string
 }
 
 export type TaskExample = {
