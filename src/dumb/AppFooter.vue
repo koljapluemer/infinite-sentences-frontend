@@ -50,7 +50,7 @@ const changeTargetLanguage = () => {
       :title="`Change native language (${nativeLanguage?.displayName})`"
       @click="changeNativeLanguage"
     >
-      {{ nativeLanguage?.symbol || store.nativeIso }}
+      {{ nativeLanguage?.symbol || nativeLanguage?.displayName || store.nativeIso }}
     </button>
     <span class="mx-1">&rarr;</span>
     <button
@@ -58,7 +58,7 @@ const changeTargetLanguage = () => {
       :title="`Change target language (${targetLanguage?.displayName})`"
       @click="changeTargetLanguage"
     >
-      {{ targetLanguage?.symbol || store.targetIso }}
+      {{ targetLanguage?.symbol || targetLanguage?.displayName || store.targetIso }}
     </button>
   </footer>
 </template>

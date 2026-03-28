@@ -10,8 +10,8 @@ const userSettingsStore = useUserSettingsStore()
 const languageStore = useLanguagePreferencesStore()
 
 const dailyGoal = ref(userSettingsStore.dailySentenceGoal)
-const nativeDisplayName = ref('')
-const targetDisplayName = ref('')
+const nativeLabel = ref('')
+const targetLabel = ref('')
 
 watch(dailyGoal, (value) => {
   userSettingsStore.setDailySentenceGoal(value)
@@ -20,11 +20,11 @@ watch(dailyGoal, (value) => {
 onMounted(async () => {
   if (languageStore.nativeIso) {
     const info = await getLanguageInfo(languageStore.nativeIso)
-    nativeDisplayName.value = info.displayName
+    nativeLabel.value = info.symbol || info.displayName
   }
   if (languageStore.targetIso) {
     const info = await getLanguageInfo(languageStore.targetIso)
-    targetDisplayName.value = info.displayName
+    targetLabel.value = info.symbol || info.displayName
   }
 })
 
@@ -75,7 +75,7 @@ const changeTargetLanguage = () => {
             class="link"
             @click="changeNativeLanguage"
           >
-            {{ nativeDisplayName || languageStore.nativeIso }}
+            {{ nativeLabel || languageStore.nativeIso }}
           </button>
         </div>
 
@@ -85,7 +85,7 @@ const changeTargetLanguage = () => {
             class="link"
             @click="changeTargetLanguage"
           >
-            {{ targetDisplayName || languageStore.targetIso }}
+            {{ targetLabel || languageStore.targetIso }}
           </button>
         </div>
       </div>
