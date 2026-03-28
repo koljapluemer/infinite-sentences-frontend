@@ -16,16 +16,10 @@ const count = computed(() => props.symbols.length)
 </script>
 
 <template>
-  <div
-    class="language-symbols"
-    :class="`layout-${count}`"
-  >
-    <span
-      v-for="(symbol, i) in shuffledSymbols"
-      :key="i"
-      class="symbol font-bold"
-      :class="`symbol-${i + 1}`"
-    >{{ symbol }}</span>
+  <div class="language-symbols" :class="`layout-${count}`">
+    <span v-for="(symbol, i) in shuffledSymbols" v-if="shuffledSymbols.length != 0" :key="i" class="symbol font-bold"
+      :class="`symbol-${i + 1}`">{{ symbol }}</span>
+    <span v-else class="symbol font-bold">💬</span>
   </div>
 </template>
 
@@ -52,6 +46,7 @@ const count = computed(() => props.symbols.length)
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
 }
+
 .layout-1 .symbol {
   font-size: 3.5rem;
 }
@@ -62,6 +57,7 @@ const count = computed(() => props.symbols.length)
   grid-template-rows: 1fr;
   gap: 0.125rem;
 }
+
 .layout-2 .symbol {
   font-size: 1.75rem;
 }
@@ -72,10 +68,12 @@ const count = computed(() => props.symbols.length)
   grid-template-rows: 1fr 1fr;
   gap: 0.125rem;
 }
+
 .layout-3 .symbol-1 {
   grid-row: 1 / 3;
   font-size: 2rem;
 }
+
 .layout-3 .symbol-2,
 .layout-3 .symbol-3 {
   font-size: 1.25rem;
@@ -87,6 +85,7 @@ const count = computed(() => props.symbols.length)
   grid-template-rows: 1fr 1fr;
   gap: 0.125rem;
 }
+
 .layout-4 .symbol {
   font-size: 1.5rem;
 }
