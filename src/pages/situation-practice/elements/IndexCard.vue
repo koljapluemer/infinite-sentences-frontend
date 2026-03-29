@@ -7,12 +7,13 @@ const props = defineProps<{
   flipped?: boolean
   swiped?: boolean
   fill?: boolean
+  gold?: boolean
 }>()
 
 const cardClasses = computed(() => [
   'card',
   'shadow',
-  'bg-white',
+  props.gold ? 'bg-amber-200' : 'bg-white',
   'text-gray-700',
   'w-full',
   props.fill && 'h-full',

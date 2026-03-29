@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 import ShowInstruction from '../../elements/ShowInstruction.vue'
 import IndexCard from '../../elements/IndexCard.vue'
 import InteractionButtonRow from '../../elements/InteractionButtonRow.vue'
@@ -18,6 +18,13 @@ const emit = defineEmits<{
 
 const flipped = ref(false)
 const phase = ref<'prompt' | 'reveal'>('prompt')
+const animationKey = ref(0)
+const canFlip = ref(false)
+
+let delayTimer: ReturnType<typeof setTimeout> | null = null
+
+const DELAY_MS = 2000
+const CIRCUMFERENCE = 2 * Math.PI * 15
 
 const cardRows = computed<IndexCardRow[]>(() => {
   const glossRow: IndexCardRow = { type: 'text', text: props.task.gloss.content, size: 'auto', subtext: props.task.gloss.transcription }
@@ -38,12 +45,22 @@ const flip = () => {
 
 const finish = () => emit('taskDone', true)
 
+const startTimer = () => {
+  canFlip.value = false
+  if (delayTimer) clearTimeout(delayTimer)
+  delayTimer = setTimeout(() => { canFlip.value = true }, DELAY_MS)
+}
+
 const resetState = () => {
   flipped.value = false
   phase.value = 'prompt'
+  animationKey.value++
+  startTimer()
 }
 
-watch(() => props.task.gloss.content, () => resetState())
+onMounted(startTimer)
+onUnmounted(() => { if (delayTimer) clearTimeout(delayTimer) })
+watch(() => props.task.gloss.content, resetState)
 </script>
 
 <template>
@@ -51,7 +68,7 @@ watch(() => props.task.gloss.content, () => resetState())
     <div>
       <ShowInstruction
         v-if="phase === 'prompt'"
-        content="Can you understand this? Try to translate, then reveal."
+        content="Can you understand this?"
       />
     </div>
 
@@ -59,6 +76,7 @@ watch(() => props.task.gloss.content, () => resetState())
       <IndexCard
         :rows="cardRows"
         :flipped="flipped"
+        gold
         fill
       />
 
@@ -76,11 +94,31 @@ watch(() => props.task.gloss.content, () => resetState())
     </div>
 
     <div class="mt-auto flex justify-center">
-      <InteractionButtonRow
-        v-if="phase === 'prompt'"
-        :icons="['RefreshCw']"
-        @select="flip"
-      />
+      <template v-if="phase === 'prompt'">
+        <svg
+          v-if="!canFlip"
+          :key="animationKey"
+          class="w-10 h-10 -rotate-90 text-base-content/30"
+          viewBox="0 0 36 36"
+        >
+          <circle
+            cx="18"
+            cy="18"
+            r="15"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            :stroke-dasharray="CIRCUMFERENCE"
+            class="countdown-ring"
+          />
+        </svg>
+
+        <InteractionButtonRow
+          v-else
+          :icons="['RefreshCw']"
+          @select="flip"
+        />
+      </template>
 
       <InteractionButtonRow
         v-else
@@ -90,3 +128,15 @@ watch(() => props.task.gloss.content, () => resetState())
     </div>
   </div>
 </template>
+
+<style scoped>
+.countdown-ring {
+  stroke-dashoffset: 0;
+  animation: v-bind('`${DELAY_MS}ms`') linear forwards countdown;
+}
+
+@keyframes countdown {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: v-bind(CIRCUMFERENCE); }
+}
+</style>
