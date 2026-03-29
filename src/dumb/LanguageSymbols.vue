@@ -20,13 +20,14 @@ const count = computed(() => props.symbols.length)
     class="language-symbols"
     :class="`layout-${count}`"
   >
-    <span
-      v-for="(symbol, i) in shuffledSymbols"
-      v-if="shuffledSymbols.length != 0"
-      :key="i"
-      class="symbol font-bold"
-      :class="`symbol-${i + 1}`"
-    >{{ symbol }}</span>
+    <template v-if="shuffledSymbols.length !== 0">
+      <span
+        v-for="(symbol, i) in shuffledSymbols"
+        :key="i"
+        class="symbol font-bold"
+        :class="`symbol-${i + 1}`"
+      >{{ symbol }}</span>
+    </template>
     <span
       v-else
       class="symbol font-bold"

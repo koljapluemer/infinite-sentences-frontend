@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import SituationPracticePage from '@/pages/situation-practice/SituationPracticePage.vue'
 import SelectNativeLanguagePage from '@/pages/select-native-language/SelectNativeLanguagePage.vue'
 import SelectTargetLanguagePage from '@/pages/select-target-language/SelectTargetLanguagePage.vue'
+import LandingPage from '@/pages/landing/LandingPage.vue'
 import { useLanguagePreferencesStore } from '@/entities/language-preferences/languagePreferencesStore'
 
 const router = createRouter({
@@ -9,7 +10,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/learn'
+      name: 'landing',
+      component: LandingPage
     },
     {
       path: '/stats',
