@@ -16,7 +16,10 @@ import { BookOpen, Brain, MessageSquareText } from 'lucide-vue-next'
       </div>
 
 
-      <RouterLink to="/learn" class="btn btn-primary btn-lg">
+      <RouterLink
+        to="/learn"
+        class="btn btn-primary btn-lg"
+      >
         Start learning
       </RouterLink>
       <small>
@@ -24,10 +27,13 @@ import { BookOpen, Brain, MessageSquareText } from 'lucide-vue-next'
       </small>
       
       <div
-        class="w-full aspect-video bg-base-200 rounded-box flex items-center justify-center text-base-content/30 text-sm">
-        <img src="@/dumb/screenshot.png" alt="">
+        class="w-full aspect-video bg-base-200 rounded-box flex items-center justify-center text-base-content/30 text-sm"
+      >
+        <img
+          src="@/dumb/screenshot.png"
+          alt=""
+        >
       </div>
-
     </section>
 
     <section class="flex flex-col gap-4">

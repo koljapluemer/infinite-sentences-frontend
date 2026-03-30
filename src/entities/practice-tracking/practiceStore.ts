@@ -1,99 +1,67 @@
 import { defineStore } from 'pinia'
 import { format, parse } from 'date-fns'
+import { createEmptyCard, fsrs } from 'ts-fsrs'
+import type { Card, Grade } from 'ts-fsrs'
 
-type TimestampMap = Record<string, string>
 type DailyCountMap = Record<string, number>
-
-const formatTimestamp = (date: Date): string => format(date, "yy-MM-dd'T'HH:mm")
 const formatDay = (date: Date): string => format(date, 'yyyy-MM-dd')
 
-const parseDateString = (dateString: string): Date | null => {
-  try {
-    return parse(dateString, "yy-MM-dd'T'HH:mm", new Date())
-  } catch {
-    return null
-  }
+// Serialized form of an FSRS Card (dates as ISO strings)
+type SerializedCard = Omit<Card, 'due' | 'last_review'> & {
+  due: string
+  last_review?: string
 }
 
-const parseStreakRecord = (value: string): { streak: number, datetime: string } | null => {
-  const parts = value.split(':')
-  if (parts.length < 2) return null
-  const streakStr = parts[0]
-  if (!streakStr) return null
-  const streak = parseInt(streakStr, 10)
-  const datetime = parts.slice(1).join(':')
-  if (isNaN(streak)) return null
-  return { streak, datetime }
-}
+const serializeCard = (card: Card): SerializedCard => ({
+  ...card,
+  due: card.due.toISOString(),
+  last_review: card.last_review?.toISOString()
+})
+
+const deserializeCard = (s: SerializedCard): Card => ({
+  ...s,
+  due: new Date(s.due),
+  last_review: s.last_review ? new Date(s.last_review) : undefined
+})
+
+const scheduler = fsrs()
 
 export const usePracticeStore = defineStore('practice-tracking', {
   state: () => ({
-    seenGlosses: {} as TimestampMap,
-    glossStreaks: {} as Record<string, string>, // "streak:datetime"
-    learnedSentences: {} as TimestampMap,
+    glossCards: {} as Record<string, SerializedCard>,
+    learnedSentences: {} as Record<string, string>,
     dailySentenceCounts: {} as DailyCountMap,
     dailySentenceCountsByLanguage: {} as DailyCountMap // key: "yyyy-MM-dd:languageIso"
   }),
 
   actions: {
-    markGlossSeen(glossKey: string) {
-      this.seenGlosses[glossKey] = formatTimestamp(new Date())
+    getGlossCard(glossKey: string): Card | null {
+      const s = this.glossCards[glossKey]
+      if (!s) return null
+      return deserializeCard(s)
     },
 
-    hasBeenSeen(glossKey: string): boolean {
-      return !!this.seenGlosses[glossKey]
+    isGlossDue(glossKey: string, now: Date = new Date()): boolean {
+      const card = this.getGlossCard(glossKey)
+      if (!card) return false
+      return card.due <= now
     },
 
-    updateGlossStreak(glossRef: string, rememberedCorrectly: boolean) {
+    getGlossDueDate(glossKey: string): Date | null {
+      const card = this.getGlossCard(glossKey)
+      return card ? card.due : null
+    },
+
+    recordGlossReview(glossKey: string, rating: Grade) {
       const now = new Date()
-      const nowString = formatTimestamp(now)
-
-      const existing = this.glossStreaks[glossRef]
-
-      if (!existing) {
-        // First time practicing this gloss
-        this.glossStreaks[glossRef] = rememberedCorrectly
-          ? `1:${nowString}`
-          : `-1:${nowString}`
-      } else {
-        const parsed = parseStreakRecord(existing)
-        if (!parsed) {
-          // Invalid format, reset
-          this.glossStreaks[glossRef] = rememberedCorrectly
-            ? `1:${nowString}`
-            : `-1:${nowString}`
-        } else {
-          const currentStreak = parsed.streak
-
-          if (rememberedCorrectly) {
-            // Correct answer: increment positive streak or reset from negative
-            const newStreak = currentStreak > 0 ? currentStreak + 1 : 1
-            this.glossStreaks[glossRef] = `${newStreak}:${nowString}`
-          } else {
-            // Incorrect answer: decrement negative streak or reset from positive
-            const newStreak = currentStreak < 0 ? currentStreak - 1 : -1
-            this.glossStreaks[glossRef] = `${newStreak}:${nowString}`
-          }
-        }
-      }
-    },
-
-    getGlossStreak(glossRef: string): { streak: number, datetime: Date } | null {
-      const value = this.glossStreaks[glossRef]
-      if (!value) return null
-      const parsed = parseStreakRecord(value)
-      if (!parsed) return null
-      const date = parseDateString(parsed.datetime)
-      if (!date) return null
-      return { streak: parsed.streak, datetime: date }
-    },
-
-    hasBeenPracticed(glossRef: string): boolean {
-      return this.hasBeenSeen(glossRef)
+      const existing = this.getGlossCard(glossKey)
+      const card: Card = existing ?? createEmptyCard(now)
+      const result = scheduler.next(card, now, rating)
+      this.glossCards[glossKey] = serializeCard(result.card)
     },
 
     markSentenceLearned(sentenceKey: string) {
-      this.learnedSentences[sentenceKey] = formatTimestamp(new Date())
+      this.learnedSentences[sentenceKey] = new Date().toISOString()
     },
 
     isSentenceLearned(sentenceKey: string): boolean {
@@ -181,8 +149,7 @@ export const usePracticeStore = defineStore('practice-tracking', {
       let currentStreak = 0
       let missedOne = false
 
-      // Start from today and go backwards through all recorded history
-      for (let i = 0; i < 365 * 10; i++) { // Check up to 10 years back
+      for (let i = 0; i < 365 * 10; i++) {
         const date = new Date(today)
         date.setDate(today.getDate() - i)
         const dateStr = formatDay(date)
@@ -193,10 +160,8 @@ export const usePracticeStore = defineStore('practice-tracking', {
           missedOne = false
         } else {
           if (missedOne) {
-            // Already missed one day, this breaks the streak
             break
           } else {
-            // First miss, allow it but don't count it
             missedOne = true
           }
         }

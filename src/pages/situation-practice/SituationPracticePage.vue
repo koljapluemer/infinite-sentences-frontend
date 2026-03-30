@@ -2,6 +2,8 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { format } from 'date-fns'
+import { Rating } from 'ts-fsrs'
+import type { Grade } from 'ts-fsrs'
 import { pickRandom, takeRandom } from '@/dumb/random'
 import { usePracticeStore } from '@/entities/practice-tracking/practiceStore'
 import { useUserSettingsStore } from '@/entities/user-settings/userSettingsStore'
@@ -85,8 +87,17 @@ const ensurePartEntry = (part: SentencePart): PartEntry => {
     partByKey.value[key] = { ...part, key }
   }
   if (!partState.value.has(key)) {
-    const seen = practiceStore.hasBeenSeen(key)
-    partState.value.set(key, seen ? 'VOCAB-TO-PRACTICE' : 'VOCAB-TO-INTRODUCE')
+    const card = practiceStore.getGlossCard(key)
+    if (!card) {
+      // Never recalled before — introduce first
+      partState.value.set(key, 'VOCAB-TO-INTRODUCE')
+    } else if (practiceStore.isGlossDue(key)) {
+      // Due for review
+      partState.value.set(key, 'VOCAB-TO-PRACTICE')
+    } else {
+      // Not due yet — skip this session
+      partState.value.set(key, 'DONE')
+    }
   }
   return partByKey.value[key]
 }
@@ -94,6 +105,23 @@ const ensurePartEntry = (part: SentencePart): PartEntry => {
 const addSentenceData = (index: number, data: SentenceData) => {
   const key = buildSentenceKey(nativeIso.value, targetIso.value, index)
   const partKeys = data.parts.map(part => ensurePartEntry(part).key)
+
+  // Ensure at least 2 parts are shown as exercises before the challenge.
+  // If fewer than 2 are naturally due/new, force the soonest-due DONE parts into practice.
+  const willBeShown = partKeys.filter(k => {
+    const s = partState.value.get(k)
+    return s === 'VOCAB-TO-INTRODUCE' || s === 'VOCAB-TO-PRACTICE'
+  })
+  const needed = 2 - willBeShown.length
+  if (needed > 0) {
+    const doneParts = partKeys
+      .filter(k => partState.value.get(k) === 'DONE')
+      .map(k => ({ k, due: practiceStore.getGlossDueDate(k) ?? new Date(0) }))
+      .sort((a, b) => a.due.getTime() - b.due.getTime())
+    for (const { k } of doneParts.slice(0, needed)) {
+      partState.value.set(k, 'VOCAB-TO-PRACTICE')
+    }
+  }
 
   activeSentences.value.push({
     index,
@@ -294,15 +322,14 @@ const handleTaskDone = (rememberedCorrectly?: boolean) => {
   }
 
   const partKey = currentTask.value.partKey
-  practiceStore.markGlossSeen(partKey)
 
   if (currentTask.value.kind === 'memorize' || currentTask.value.kind === 'understand') {
+    // Introduction step — no FSRS review yet, just move to recall stage
     partState.value.set(partKey, 'VOCAB-TO-PRACTICE')
   } else if (currentTask.value.kind === 'recall') {
-    if (rememberedCorrectly !== undefined) {
-      practiceStore.updateGlossStreak(partKey, rememberedCorrectly)
-    }
-    if (rememberedCorrectly) {
+    const remembered = rememberedCorrectly ?? false
+    practiceStore.recordGlossReview(partKey, (remembered ? Rating.Good : Rating.Again) as Grade)
+    if (remembered) {
       partState.value.set(partKey, 'DONE')
     }
   }
