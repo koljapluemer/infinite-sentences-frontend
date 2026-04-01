@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { Flag } from 'lucide-vue-next'
 import { useRoute } from 'vue-router'
 import { format } from 'date-fns'
 import { Rating } from 'ts-fsrs'
@@ -19,6 +20,8 @@ import type { RecallFromTargetTask as RecallTask } from './tasks/RecallFromTarge
 import type { UnderstandTargetFromSentenceTask as UnderstandTask } from './tasks/UnderstandTargetFromSentence/interface'
 import type { ChallengeTryToUnderstandTask as ChallengeTask } from './tasks/ChallengeTryToUnderstand/interface'
 import type { TaskText } from './tasks/taskDisplayTypes'
+import ReportCardModal from '@/features/report-card/ReportCardModal.vue'
+import type { CardReportContext } from '@/features/report-card/ReportCardModal.vue'
 
 type PartState = 'VOCAB-TO-INTRODUCE' | 'VOCAB-TO-PRACTICE' | 'DONE'
 
@@ -367,6 +370,30 @@ const loadPractice = async () => {
 }
 
 watch([nativeIso, targetIso], loadPractice, { immediate: true })
+
+const reportOpen = ref(false)
+
+const reportContext = computed<CardReportContext | null>(() => {
+  if (!currentTask.value) return null
+  if (currentTask.value.kind === 'challenge') {
+    return {
+      taskKind: 'challenge',
+      nativeIso: nativeIso.value,
+      targetIso: targetIso.value,
+      gloss: currentTask.value.data.gloss.content,
+      translations: currentTask.value.data.translations.map(t => t.content),
+      cardKey: currentTask.value.sentenceKey,
+    }
+  }
+  return {
+    taskKind: currentTask.value.kind,
+    nativeIso: nativeIso.value,
+    targetIso: targetIso.value,
+    gloss: currentTask.value.data.gloss.content,
+    translations: currentTask.value.data.translations.map(t => t.content),
+    cardKey: currentTask.value.partKey,
+  }
+})
 </script>
 
 <template>
@@ -394,7 +421,7 @@ watch([nativeIso, targetIso], loadPractice, { immediate: true })
 
   <div
     v-else
-    class="w-full flex justify-around flex-1"
+    class="w-full flex justify-around flex-1 relative"
   >
     <MemorizeFromTargetTask
       v-if="currentTask?.kind === 'memorize'"
@@ -426,5 +453,21 @@ watch([nativeIso, targetIso], loadPractice, { immediate: true })
     >
       <span class="loading loading-spinner loading-lg" />
     </div>
+
+    <button
+      v-if="currentTask"
+      class="btn btn-ghost btn-sm btn-circle absolute top-2 right-2 text-light"
+      title="Report this card"
+      type="button"
+      @click="reportOpen = true"
+    >
+      <Flag class="w-4 h-4" />
+    </button>
   </div>
+
+  <ReportCardModal
+    :open="reportOpen"
+    :context="reportContext"
+    @close="reportOpen = false"
+  />
 </template>

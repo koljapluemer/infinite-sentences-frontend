@@ -3,25 +3,42 @@ import { ref } from 'vue'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db } from '@/app/firebase'
 
-const props = defineProps<{ open: boolean }>()
+export type CardReportContext = {
+  taskKind: string
+  nativeIso: string
+  targetIso: string
+  gloss: string
+  translations: string[]
+  cardKey: string
+}
+
+const props = defineProps<{
+  open: boolean
+  context: CardReportContext | null
+}>()
+
 const emit = defineEmits<{ close: [] }>()
 
+const REASONS = ['Inappropriate', 'Bad translation', 'Confusing', 'Something else'] as const
+type Reason = (typeof REASONS)[number]
+
+const reason = ref<Reason | ''>('')
 const message = ref('')
 const email = ref('')
-const newsletter = ref(false)
 const submitting = ref(false)
 const submitted = ref(false)
 const error = ref('')
 
 async function submit() {
-  if (!message.value.trim()) return
+  if (!reason.value) return
   submitting.value = true
   error.value = ''
   try {
-    await addDoc(collection(db, 'feedback-infi'), {
-      message: message.value.trim(),
+    await addDoc(collection(db, 'feedback-infi-cards'), {
+      reason: reason.value,
+      message: message.value.trim() || null,
       email: email.value.trim() || null,
-      newsletter: newsletter.value,
+      context: props.context,
       createdAt: serverTimestamp(),
     })
     submitted.value = true
@@ -35,9 +52,9 @@ async function submit() {
 function close() {
   emit('close')
   setTimeout(() => {
+    reason.value = ''
     message.value = ''
     email.value = ''
-    newsletter.value = false
     submitted.value = false
     error.value = ''
   }, 300)
@@ -51,14 +68,14 @@ function close() {
   >
     <div class="modal-box">
       <h3 class="font-bold text-lg mb-4">
-        Give feedback
+        Report card
       </h3>
 
       <div
         v-if="submitted"
         class="flex flex-col gap-4"
       >
-        <p>Thanks, received!</p>
+        <p>Thanks, reported!</p>
         <div class="modal-action">
           <button
             class="btn"
@@ -76,45 +93,58 @@ function close() {
       >
         <fieldset class="fieldset">
           <label
-            for="feedback-message"
+            for="report-reason"
             class="label"
-          >Message</label>
+          >Reason</label>
+          <select
+            id="report-reason"
+            v-model="reason"
+            class="select"
+            required
+          >
+            <option
+              value=""
+              disabled
+            >
+              Select a reason
+            </option>
+            <option
+              v-for="r in REASONS"
+              :key="r"
+              :value="r"
+            >
+              {{ r }}
+            </option>
+          </select>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <label
+            for="report-message"
+            class="label"
+          >Message <span class="text-light">(optional)</span></label>
           <textarea
-            id="feedback-message"
+            id="report-message"
             v-model="message"
             class="textarea w-full"
-            placeholder="Love the app? Confused by something? Want to see another language?"
-            rows="4"
-            required
+            placeholder="Tell me more…"
+            rows="3"
           />
         </fieldset>
 
         <fieldset class="fieldset">
           <label
-            for="feedback-email"
+            for="report-email"
             class="label"
-          >Email <span class="text-light">(optional, only if you want to me to
-            reply)</span></label>
+          >Email <span class="text-light">(optional; if you want me to reply or notify you)</span></label>
           <input
-            id="feedback-email"
+            id="report-email"
             v-model="email"
             type="email"
             class="input"
             placeholder="you@example.com"
           >
         </fieldset>
-
-        <label
-          v-if="email"
-          class="flex items-center gap-2 cursor-pointer"
-        >
-          <input
-            v-model="newsletter"
-            type="checkbox"
-            class="checkbox"
-          >
-          <span>Subscribe to my newsletter (max 2/month)</span>
-        </label>
 
         <p
           v-if="error"
@@ -134,7 +164,7 @@ function close() {
           <button
             type="submit"
             class="btn btn-primary"
-            :disabled="submitting || !message.trim()"
+            :disabled="submitting || !reason"
           >
             {{ submitting ? 'Sending…' : 'Send' }}
           </button>
