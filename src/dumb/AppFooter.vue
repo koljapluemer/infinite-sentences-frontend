@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+
+const emit = defineEmits<{ feedback: [] }>()
 import { useLanguagePreferencesStore } from '@/entities/language-preferences/languagePreferencesStore'
 import { getLanguageInfo, type LanguageInfo } from '@/entities/language'
 
@@ -45,21 +47,29 @@ const changeTargetLanguage = () => {
     v-if="showFooter"
     class="text-center py-2 text-light mt-10 flex flex-col gap-2"
   >
-    <div class="">
+    <div class="flex items-center justify-center gap-4">
+      <div>
+        <button
+          class="link"
+          :title="`Change native language (${nativeLanguage?.displayName})`"
+          @click="changeNativeLanguage"
+        >
+          {{ nativeLanguage?.symbol || nativeLanguage?.displayName || store.nativeIso }}
+        </button>
+        <span class="mx-1">&rarr;</span>
+        <button
+          class="link"
+          :title="`Change target language (${targetLanguage?.displayName})`"
+          @click="changeTargetLanguage"
+        >
+          {{ targetLanguage?.symbol || targetLanguage?.displayName || store.targetIso }}
+        </button>
+      </div>
       <button
         class="link"
-        :title="`Change native language (${nativeLanguage?.displayName})`"
-        @click="changeNativeLanguage"
+        @click="emit('feedback')"
       >
-        {{ nativeLanguage?.symbol || nativeLanguage?.displayName || store.nativeIso }}
-      </button>
-      <span class="mx-1">&rarr;</span>
-      <button
-        class="link"
-        :title="`Change target language (${targetLanguage?.displayName})`"
-        @click="changeTargetLanguage"
-      >
-        {{ targetLanguage?.symbol || targetLanguage?.displayName || store.targetIso }}
+        Give feedback
       </button>
     </div>
     <hr>
