@@ -1,0 +1,1 @@
+add transliterations to not just `tha` (`glosses4learning-pytools` repo)
