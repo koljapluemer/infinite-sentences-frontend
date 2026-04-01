@@ -24,7 +24,7 @@ export async function getLanguageInfo(iso: string): Promise<LanguageInfo> {
   const symbols = data?.symbols || []
   return {
     iso,
-    displayName: data?.displayName || iso,
+    displayName: data?.displayName || '',
     symbol: symbols[0] || '',
     symbols
   }
